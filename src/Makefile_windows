@@ -1,0 +1,31 @@
+LINK = vlink 
+ASM = vasmm68k_mot
+# no symbols: makes executable smaller (and this software is undebuggable with a symbolic debugger anyway)
+ASMOPTS =  -IK:/jff/AmigaHD/amiga39_JFF_OS/include -x -Fhunk -nosym
+
+
+OBJDIR = ..\obj
+EXEDIR = ..\bin
+
+
+OBJS = $(OBJDIR)/main.o $(OBJDIR)/reloc.o $(OBJDIR)/loaders.o
+
+all : $(EXEDIR)/cd32load
+
+
+clean:
+	del /Q $(EXEDIR)\* $(OBJDIR)\*.o
+
+$(EXEDIR)/cd32load	: $(OBJS) $(MAKEFILE)
+	$(LINK) -o $(EXEDIR)/cd32load $(OBJS)
+	
+
+$(OBJDIR)/main.o: util.asm main.asm macros.i struct.i
+	$(ASM) -phxass $(ASMOPTS) main.asm -o $(OBJDIR)/main.o
+# no optimize options for relocatable part, it contains some resourced code, could be dangerous
+$(OBJDIR)/loaders.o: loaders.asm cd32loader.asm rnloader.asm
+	$(ASM)  -no-opt $(ASMOPTS) loaders.asm -o $(OBJDIR)/loaders.o
+
+$(OBJDIR)/reloc.o: whd.asm cdio.asm util.asm reloc.asm ATNDecrunch.asm send_key_event.asm hunk.asm ReadJoyPad.s copymem.asm custom.asm \
+    DebugScreen.s virtual_keyboard.asm virtual_mouse.asm macros.i struct.i RNC12Decrunch.asm TPWMDecrunch.asm cd32pio.s
+	$(ASM) $(ASMOPTS) -opt-allbra reloc.asm -o $(OBJDIR)/reloc.o

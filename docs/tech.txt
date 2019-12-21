@@ -1,0 +1,237 @@
+1)
+
+lock = Lock("<your path>",SHARED_LOCK), get lock->fl_Task (struct FileLock),
+then scan DosList for entry with dol_type==DLT_DEVICE with matching dol_task. dol_Name points to device name. 
+
+
+
+2)
+	move.l 4.w,a6
+	lea keycodes(pc),a4
+l6
+	; Disable interrupts
+	jsr -$78(a6)
+	
+	; Timer value = 10 (Just randonly chosen value)
+	move.b #10,$bfe401
+	move.b #0,$bfe501
+	; OUTMODE and START
+	move.b #$41,$bfee01
+l1
+	; Write keycode
+	move.b (a4)+,$bfec01
+
+	; Delay until keycode transmit is complete
+	; (Can't poll CIA interrupt register because it also clears it)
+	moveq #10-1,d2
+l4
+	move.w $dff006,d0
+	clr.b d0
+l3	move.w $dff006,d1
+	clr.b d1
+	cmp.w d0,d1
+	beq.s l3
+	dbf d2,l4
+
+	; Stop timer
+	bclr #0,$bfee01
+
+	; Enable interrupts
+	jsr -$7e(a6)
+
+	; Wait until keyboard interrupt
+	; handler has handled the keycode
+	; = outmode was cleared.
+l5
+	btst #6,$bfee01
+	bne.s l5
+
+	cmp.b #$ff,(a4)
+	bne.s l6
+
+	rts
+
+keycodes
+	dc.b ~($20<<1+0),~($20<<1+1) ;A press,A relase
+	dc.b ~($35<<1+0),~($35<<1+1) ;B
+	dc.b ~($33<<1+0),~($33<<1+1) ;C
+	dc.b $ff
+
+3) Mount HDF as IDE0 (and make sure you have A1200 mainboard hardware = chipset extra = A1200 and A1200 ROM)
+
+4)
+http://eab.abime.net/showthread.php?p=1059568#post1059568
+
+;=====================================================================
+; Check CD32 EXTRA BUTTONS on PORT1 and PORT2.....
+;=====================================================================
+CD_PLAY EQU 1 ; BIT 1 = PLAY
+CD_RWD EQU 2 ; BIT 2 = RWD
+CD_FWD EQU 3 ; BIT 3 = FWD
+CD_G EQU 4 ; BIT 4 = GREEN
+CD_Y EQU 5 ; BIT 5 = YELLOW
+CD_R EQU 6 ; BIT 6 = RED
+CD_B EQU 7 ; BIT 7 = BLUE
+;=====================================================================
+ReadCD32: movem.l d0-d3/a0,-(sp) ; Push registers
+
+move.w $dff00a,d0 ; Dump JOY0DAT
+move.w $dff00c,d0 ; Dump JOY1DAT
+
+move.w #$6600,$dff034 ; JOY PIN5 = output
+
+moveq.l #0,d1 ; d1 = PORT1 values
+moveq.l #0,d2 ; d2 = PORT2 values
+moveq.l #7,d0 ; d0 = 8 bits
+
+bset #7,$bfe201 ; Set /FIR1 DDRA
+bset #6,$bfe201 ; Set /FIR0 DDRA
+bclr #7,$bfe001 ; /FIR1 output low
+bclr #6,$bfe001 ; /FIR0 output low
+
+ReadCD32_1: tst.b $bfe001 ; Read CIA
+tst.b $bfe001 ; Read CIA
+tst.b $bfe001 ; Read CIA
+tst.b $bfe001 ; Read CIA
+tst.b $bfe001 ; Read CIA
+tst.b $bfe001 ; Read CIA
+move.w $dff016,d3 ; Read POTINP
+
+btst #10,d3 ; PORT1 pin9 status
+bne.b ReadCD32_2 ; Skip if not set
+bset d0,d1
+
+ReadCD32_2: btst #14,d3 ; PORT2 pin9 status
+bne.b ReadCD32_3 ; Skip if not set
+bset d0,d2
+
+ReadCD32_3: bset #7,$bfe001 ; /FIR1 output high
+bclr #7,$bfe001 ; /FIR1 output low
+bset #6,$bfe001 ; /FIR0 output high
+bclr #6,$bfe001 ; /FIR0 output low
+
+dbf d0,ReadCD32_1 ; Get next bit
+
+bclr #7,$bfe201 ; Restore /FIR1 DDRA
+bclr #6,$bfe201 ; Restore /FIR0 DDRA
+
+move.w #$ffff,$dff034 ; Restore POTGO
+
+lea CD32_Port2,a0 ; Store PORT2 values
+move.b d1,(a0)
+lea CD32_Port1,a0 ; Store PORT1 values
+move.b d2,(a0)
+
+movem.l (sp)+,d0-d3/a0 ; Pop Registers
+rts ; Return
+;=====================================================================
+CD32_Port1: dc.b 0
+CD32_Port2: dc.b 0
+CNOP 0,2
+;=====================================================================
+
+5) RESET on quit
+lea 2,A0
+RESET
+jmp (a0)
+
+6) complex patchlist
+        _pl1    PL_START
+                PL_R    $2046                   ;copylock
+                PL_PS   $560,_load              ;replace the loading routine
+                PL_P    $1460,_getx             ;provide value x
+                PL_S    $696,8                  ;skip 8 bytes
+                PL_I    $100                    ;break if reached
+                PL_IFC1                         ;if Custom1 option is not null
+                PL_B    $3500,$44               ;write byte
+                PL_ELSE
+                PL_B    $3500,$55               ;write byte
+                PL_ENDIF
+                PL_IFC2X 3                      ;if Custom2 bit #3 is set
+                PL_W    $3510,$4444             ;write word
+                PL_ENDIF
+                PL_L    $3520,$44444444         ;write long
+                PL_A    $20000,$10              ;write #$10010 to $30000
+                PL_PA   $500,_data              ;write address _data
+                PL_NOP  $3000,$36               ;fill with nops
+                PL_NOPS $4000,5                 ;write 5 nops
+                PL_C    $30,7000                ;clear 7000 bytes
+                PL_CB   $79                     ;clear one byte
+                PL_PSS  $8700,_load,4           ;jsr + skip 4 bytes
+                PL_NEXT _pl2                    ;goto second patch list
+				
+7) patchseg: Odyssey:
+
+_patchlist	PL_START
+		PL_P	$13030,Copylock		; first instruction of section 1
+		SECSTRT_1:
+	PEA	LAB_08AB(PC)		;13030: 487a000a
+	MOVE.L	(A7)+,ILLEG_OPC		;13034: 23df00000010
+	ILLEGAL				;1303a: 4afc
+
+		PL_W	$4e,$6008		;snoop mode fixes
+		PL_W	$130,$6006
+		PL_R	$13908			;OS fault routine
+		PL_R	$4de			;savegame patch
+		PL_W	$c224,$6018		;dos.open()
+		PL_PS	$c246,SaveGame
+;		PL_W	$c2d8,$6034		;disk message
+		PL_PS	$c358,TestFile
+		PL_W	$c358+6,$6002		;remove dos.close()
+		PL_W	$c358+14,$6002
+		PL_W	$c24c,$6038
+		PL_END
+8) RN
+
+; RNC1 old fileformat:
+;  0 BYTE   "RNC",$01
+;  4 LONG   unpacked size
+;  8 LONG   packed stream size
+;  c STRUCT packed stream
+
+; RNC1.new fileformat:
+;  0 BYTE   "RNC",$01
+;  4 LONG   unpacked size
+;  8 LONG   packed stream size
+;  c WORD   unpacked crc
+;  e WORD   packed crc
+; 10 UBYTE  required offset if decrunching over itself
+; 11 BYTE
+; 12 STRUCT packed stream
+; decrunching source++ destination++
+
+9) ISOCD batch
+
+ISOCD -lnet:cd32.layout -ccd32.tm -b
+
+10) DMA Akiko
+
+It probably is also good idea to clear B80024.L to disable all Akiko DMA, it also aborts all still active transfers.
+
+Actually it is safer to only clear bits 27, 29, 30 and 31 (DMA bits) and not touch other bits (flags/control bits). 
+
+11) examine/exnext
+
+	MOVE.L	(A7)+,D1		; Path pointer
+	MOVEQ	#-2,D2			; Read mode
+	JSRLIB	Lock			; Lock
+	TST.L	D0
+	BEQ.S	.ERROR			; Not found ??
+	MOVE.L	D0,D5
+
+	MOVE.L	D5,D1
+	MOVE.L	#FILEINFO,D2
+	JSRLIB	Examine			; Examine first lock
+	TST.L	D0
+	BEQ.S	.ERROR
+
+
+.LOOP	MOVE.L	#FILEINFO+8,D0		; Disk/Dir/File-name ptr
+	BSR.W	TEXT_PRINT		; Print name
+
+	MOVE.L	D5,D1
+	MOVE.L	#FILEINFO,D2
+	JSRLIB	ExNext			; Next name on the disk
+	TST.L	D0
+	BNE.B	.LOOP
+	

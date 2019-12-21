@@ -1,0 +1,181 @@
+v0.47:
+
+- ??
+
+v0.46 (28-10-2019):
+
+- added USEFASTMEM to enable set resident program in fastmem if available (before it was done if fastmem was found, which
+  could bias vanilla CD32 tests)
+- USEFASTMEM in conjunction with PRELOAD allows to allocate the file buffer in fast memory (wasn't done in earlier versions even if
+  fastmem was available). This option allows to avoid too many CD loads and see if those loads are the reason of the game not working
+- added MASKINT2 to catch unwanted level 2 interrupts during loading and block interrupts again
+  (for games that change interrupts from within VBLANK interrupt, but where CDFREEZE is too extreme)
+- added an important piece of information in the documentation: use JOYPAD=0 for slaves which already support CD32 joypad natively
+- relaxed check for basemem vs cdbuffer (if basemem was exactly $1E0000 it failed, like for Rygar)
+  
+v0.45 (04-05-2019):
+
+- removed useless Rob Northen CD & floppy & NVM routines, leaving only HD routine: smaller CD32load executable
+- RNCD option removed (Rob Northen CD routine isn't available anymore)
+- FAILSAFE option added to test when strange bugs appear during play (sets JOYPAD=0 and CDFREEZE)
+- reverse-engineered Rob Northen HD routine partially. Look out for a future version with partial HD loading for A600s/A1200s
+- added check to detect interrupt level 2 enabling when CD data load is running (so CDFREEZE has to be used)
+- fixed error handling for games testing non-existent files
+
+v0.44 (21-04-2019):
+
+- read retry made more robust (crashed on Lemmings CD): Lemmings CD now works on the real machine
+- added more details to error log
+  
+v0.43 (14-04-2019):
+
+- improved CD data read / reduced retries/errors when switching from audio to data &
+  reduce resume time in case of an error (still several seconds when there's a failure)
+- Lemmings CD still doesn't work on the real machine... damn...
+
+v0.42 (09-04-2019):
+
+- added CD1X switch to set CD speed to 1 (not supported with RNCD)
+- fixed nasty CD audio bug that prevented CD data read to work after audio had been played
+- fixed kickemu games (broken since v0.41). Another World works. Other won't be useable
+  because they load forever on real hardware (Panza Kick Boxing, Test Drive II)
+- "red screen of death" works even if program is located in fastmem (Terrible Fire boards)
+- added DEBUG switch to see colors during some specific operations
+- fixed keyboard emulation (key release). Joypad states could be incorrect due to mixed registers
+- disassembled and slightly reverse-engineered Psygore cd32 data loader, fixed the grinding issue in the code
+  now it will be possible to add/fix stuff / alter assembly code at least.
+- added source code for 2 new "cdslaves": Premiere & Silkworm (final)
+
+v0.41:
+
+- binned VBLHANDLER option which was a non-working attempt to add extra slave capability (now replaced CDSLAVE)
+- removed NOAKIKOPOKE. No need to Akiko-poke. It's more toxic than doing nothing
+- Added READDELAY (defaults to 200ms). Now retry delay is set by RETRYDELAY (also 200ms AKA 3000 units)
+  (this feature allows to make some games work better by making sure that the CD accesses are not too close to each other)
+  
+v0.40:
+
+- added ability to play CD audio while games are running
+ (kudos to Toni Wilen for providing a hardware CD32 audio replay routine & great support)
+- added source code for "cdslaves" done so far (Wonderdog, Gods, Marble Madness, Lemmings, Silkworm WIP)
+- fixed: conditional PL_DATA in patchlist wrongly skipped
+- fixed: joystick read routine when a joypad isn't connected
+- improved: check if slave requirements (AGA) matches chiprev bits (now that CD32load can be run with A600+HD)
+
+v0.34:
+
+- fixed: gb_ChipRevBits0 wrong value stored
+- fixed: wrong previous state memory in joypads
+- improved: properly detect joystick / joypad connected (avoids that pressing 2nd button joystick resets the game)
+- improved: if HD mode, detect used filesystem & block size. Exits if blocksize isn't 512 and filesystem is exotic like PFS, SFS
+  (not perfect as it doesn't detect FFS mounted through uaehf.device yet)
+- fixed: resload_GetFileSize/GetFileSizeDec now test D0 before returning (some games only tested CCR): Midnight Resistance works when
+  files are RN-packed
+- fixed: resload_GetCustom returns proper return code (in case some slave checks)
+
+v0.33:
+
+- "resload_PatchSeg" bugfix (last one I hope...): Pushover works
+- support for actual chipset revision bits in resload_Control
+- support for bplcon system value in resload_Control
+- improved "resload_Relocate" support
+
+v0.32:
+
+- "resload_PatchSeg" support (with Relocate) & PL_GA patch command fixed
+- fixed buggy resload_GetFileSizeDec: Flashback works
+
+v0.31:
+
+- improved "resload_Relocate" method: Xenon works now, without gfx glitches
+- "resload_PatchSeg" support (with Relocate) & PL_GA patch command added: Moonstone works!
+- documented the "reset with front buttons" option
+
+v0.30:
+
+- Now works from hard drive even if main hard drive device name is not DH0: but for instance DH1:
+ (you still have to use DISKUNIT if your game data is located on unit 1)
+
+v0.29:
+
+- fixed CD buffer overlap which can result on random errors/"grinding" on real hardware (Thanks Toni!)
+- merged Earok virtual mouse changes & documentation
+- removed "blitz/LMB" for hard drive mode
+
+v0.28:
+
+- improved "red screen of death" display for AGA games (sometimes it just remained black on error). Thanks Galahad & Toni for that one
+- set default debug key to an invalid value so slaves never trigger debugkey anymore (Project-X SE)
+- fixed nasty A5 register change in ATN decruncher
+- fixed ATN header overwrite when source!=dest
+- fixed cd buffer address display shown at 0 when enabling PRETEND option
+
+v0.27:
+
+- Only useful CD/HD loader is loaded in memory (saves memory usage, useful when trying to run AGA games)
+- New expert parameters FREEBUFFER and CDBUFFER2 used to workaround the lack of aligned free memory
+  for cd buffer: Body Blows AGA now works (with something looking like "OS-flashes", only faster) !
+
+v0.26:
+
+- added activation of CUSTOMx=1 when buttons are pressed on startup
+- added VBL interrupt redirect when JOYPAD is explicitly set on a 68000 machine (or NOVBRMOVE), allowing to remap
+  joypad buttons to keyboard on most games on a 68000 (without the need of a VBR register)
+- fixed a nasty bug when emulating TRAPV (Super OffRoad Racer works)
+- Proper TPWM decrunch interface, now latest Turrican 3 slave runs (and possibly others using TPWM decruncher)
+- Fixed FILECACHE/PRELOAD option with default CD loader (nasty lockups when used with diskimages)
+- Fixed virtual keyboard / mouse options
+- Better cd error handling
+- Fixed cd buffer initialization: most AGA games previously locking up on real HW now work!
+
+v0.25:
+
+- removed the green delay screen for HRTMon: no more need to put breakpoints: HRTMon enters without doing anything special
+  now that the custom registers banging was fixed in v0.24
+- if a spurious level 2 interrupts occurs because of AKIKO, acknowledge and exit
+- more complete handling of Akiko DMA when starting/stopping CDIO (thanks Toni)
+
+v0.24:
+
+- NOCACHE option removed (caches are now off by default, as a lot of games seem to need it to run)
+- CPUCACHE option added to preserve caches (means that if you booted without caches, it won't turn it on)
+- adapted sources & added makefile for vasm/vlink for native windows build (less than 1 hour work!)
+- fixed custom registers banging so more games start OK on real hardware (thanks Toni)
+
+v0.23:
+
+- READDELAY now is able accept values > 0xFFFF
+- Drive initialization is only performed if needed (may be unnecessary with PRELOAD)
+- New MASKINT6 option used to avoid CD32 CIA-B interrupts on unhandled level 6 interrupts during game
+  (allows to run Cool Spot, Global Gladiators, Putty Squad)
+- If joypad=2 or 3, pressing RED+GREEN+YELLOW+BLUE+PLAY on joypad 2 resets the machine
+- swapped BWD/FWD default mapping: now F1<=>BWD, F2<=>FWD
+- HRTMon now useable from startup (D option) with some breakpoints tricks (HRTmon works with FREEZEKEY set
+  without any tricks, but what's interesting in debugging often occurs at slave startup, like installing interrupts...)
+
+v0.22:
+
+- Fixed bug with PRELOAD and kickstart emulation
+- Fixed crash when starting on IDE HD mode (A1200/A600), broken since v0.18
+
+v0.21:
+
+- added PRELOAD= option: this option preloads the passed file in memory BEFORE shutting down the OS: means that it will be loaded using AmigaDOS loader.
+  Implies FILECACHE: you need 2MB of memory to use it in most cases
+- NOCDFREEZE now still turns off level 2 interrupt instead of leaving all interrupts on
+- Turns off AKIKO interrupt on level 2 interrupt (unless NOVBRMOVE is set): allows to run more games on real hardware
+- Fixed Abort code 5 (DEBUG) in Project-X Special Edition (regression introduced v0.18 when initializing CIA stuff)
+- Fixed chipmem memory detection with MaxLocMem instead of lame AllocMem call
+- Works with CF IDE cards (successfully tested by tomcat666, who did not read the doc and did not know it wasn't supposed to work :)) Thanks!!
+- resload_Examine() returns a valid handle on system directories: doesn't affect kickstart emulation, and startup will be faster
+
+v0.20:
+
+- added retries when error -5 is encountered on Psygore CD loader
+- added FILECACHE option to speed up CD operations. Basically, if the game uses 1 megabyte and standard 901120 bytes diskfiles (or smaller files), this will work.
+  (RNCD option turns that on since it cannot partially read files)
+- added NB_READ_RETRIES for CD operations. Default is 3 retries.
+
+v0.18 and before:
+
+- did not care to log changes. Well, maybe I should have.

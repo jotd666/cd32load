@@ -1,0 +1,347 @@
+Working games tested so far on WinUAE CD32 standard confguration. Most work on real hardware but there can be exceptions. I'll try to test
+them all on real hardware and will report status.
+Be careful, as compatibility also depends a lot of the slave version used. Sometimes old slave works, new does not, and sometimes it the other way round.
+
+(*)=tested on real HW (ATM a lot have been tested on real HW, but I don't have the exact list)
+
+
+online version of the compat. list can be found here, more up to date than this one (well at least those reported working are definitely working):
+
+https://docs.google.com/spreadsheets/d/1iXihK_2utvO2hlqchQxW9reUKBxLNmBYUzlu82-x4LI/edit#gid=0
+
+
+- Arkanoid
+- Assassin
+- Pang
+- Magic Pockets
+- Addams Family
+- Jaguar XJ220 (*)
+- Robocop 3
+- Desert Strike
+- First Samurai
+- Lotus 2
+- Lotus 3
+- Chuck Rock 2
+- Goal!
+- James Pond
+- QWAK
+- Kick Off 2 (cannot save of course!)
+- Full Contact
+- Xenon 2
+- Jungle Strike
+- Supercars 2
+- Superfrog
+- Zool (AmigaFun)
+- Z-Out
+- Shinobi
+- Supercars
+- BattleSquadron
+- Arkanoid 2
+- Deliverance
+- Killing Game Show
+- DataStorm
+- Cool Spot
+- Leander
+- Risky Woods
+- R-Type
+- R-Type 2
+- Alien III
+- Dynablaster (v1.0 slave, newer won't work)
+- Frenetic
+- Klax
+- Ninja Warriors (create NinjaWarriors.save empty)
+- Nitro
+- Toki
+- X-Out (old 2 disk slave, did not test Stingray's slave)
+- Gauntlet II
+- Oh No More Lemmings (0.3. Tested with non-data disk version that asks for password).
+- Woodys World
+- North Sea Inferno
+
+*** from CD32LOAD V0.06 ***
+- Pinball Dreams
+- Castle Kingdoms
+- Death Trap
+- Elvira Arcade
+- Indianapolis 500
+- Mortal Kombat
+- Mercs
+- F-16 Combat Pilot (probably needs a keyboard!!)
+- Beast Busters (create a blank "hiscore.dat" file)
+- Shadow of the Beast
+- Pacmania
+- Jim Power (JOYPAD=1 JOY0BLUE=0x19, JOY0RED=0x5F)
+- Arkanoid 2 (space: pause)
+- Battle Squadron: (JOYPAD=0, needs keyboard: map F1->F4/pause does not remap)
+- Immortal (needs keyboard to enter level codes)
+- Final Fight
+- Dogs of War: ok but cannot remap keys: needs keyboard
+- Project-X SE (JOYPAD=1 CUSTOM1=1 CUSTOM2=1)
+- Wrath of the Demon (JOYPAD=1 JOY0BLUE=0x19)
+- Alien Breed: The Story
+- Apocalypse
+- Beach Volley
+- Chase HQ 2 (requires chasehq2hi.dat to be created, but then works OK - title screen takes ages though)
+
+*** from CD32LOAD V0.07 ***
+- Great Courts
+- Lotus Esprit Turbo Challenge (disk version)
+- Brat
+- Switchblade
+- Gods (better have an existing "highs" file with the passwords)
+- Lemmings (2 disk version, slave 1.4)
+- Chaos Engine 2
+- Speedball 2 (cannot save, but knockout is cool)
+- Global Gladiators
+- Hybris
+
+*** from CD32LOAD V0.08 ***
+- Desert Strike (no need for NOVBRMOVE)
+- Cannon Fodder (cannot load/save, but works)
+- Rainbow Islands (JOYPAD=0 or music won't work)
+- New Zealand Story (NOCACHE or gfx are trashed)
+- Parasol Stars
+
+*** from CD32LOAD V0.09 ***
+- Turrican
+- Turrican II
+- Aaargh!
+- Hard'N'Heavy (JOY1BLUE=0x00 JOY1PLAY=0x40)
+- BMX Simulator
+- Chase HQ (Doesn't map keyboard)
+- Kick Off 1 (Doesn't map keyboard)
+- Kick Off 3 European Challenge
+- Road Rash (Doesn't map keyboard)
+- Total Football
+- Last Ninja 3 (F keys to map, mapping does not seem to work)
+
+*** from CD32LOAD V0.10 ***
+- Aquatic Games (FORCECHIP=0x80000 FORCEEXP=0x80000), not tested a lot but seems to work
+- Ikari Warriors (key mapping???)
+- Afterburner 2
+- Ninja Remix
+- Tiny Toys Adventure AGA (with NOBUFFERCHECK)
+- Warzone Core
+- Fire and Ice ECS (NOVBRMOVE or music will be trashed / will crash)
+- Alien Breed (NOCACHE)
+
+*** from CD32LOAD V0.11 ***
+- Globdule
+- Cannon Fodder 2 (just for fun, since you cannot load or save)
+- Zeewolf
+- Zeewolf2
+- Chase HQ
+- Myth (system 3)
+- Walker (map F1 & F3)
+- Fire and Brimstone
+- Robocop
+- Elf (Ocean) (remap F keys & cannot save)
+
+*** from CD32LOAD V0.12 ***
+- Turrican 3 (1.3 slave works, 1.4 crashes)
+- Agony (JOYPAD=1 JOY0BLUE=0x19)
+- AfterBurner 88 (0,1,2, backspace pauses)
+- Liquid Kids (CUSTOM1=2, 1,2,P)
+- Ghosts and Goblins (CUSTOM1=48 JOY1BLUE=0x00 JOY1YELLOW=0x51)
+- Nicky Boom
+- Kid Gloves
+- Krustys Super Fun House
+- Nebulus 2
+- Fuzzball
+- Alfred Chicken
+- Indy Heat
+
+*** from CD32LOAD V0.13 ***
+- Rodland
+- Unreal (V2.0 from JOTD/Harry works, Psygore version needs too much mem)
+- Mortal Kombat
+- Gravity Force
+- Thunderhawk
+
+*** from CD32LOAD V0.14 ***
+- SWIV
+- Chuck Rock (new slave)
+- BC Kid
+- Golden Axe (JOYPAD=0 or crashes at character selection)
+- Lotus 3 (keyboard problems, slave should be fixed)
+
+*** from CD32LOAD V0.15 *** (a lot of previously unrunnable games now work thanks to the new CDIO code by Psygore)
+- Elfmania
+- Body Blows ECS
+- MrNutz
+- Body Blows Galactic (ECS)
+- Ghouls'n'Ghosts
+- Beast 2
+- Master Axe (!AGA!) (with RESLOAD_TOP=0x1F0000)
+- Chaos Engine 2 (!AGA!) (with CDBUFFER=0x70000 RESLOAD_TOP=0x1fab00)
+- Body Blows Galactic (!AGA!) (with RESLOAD_TOP=0x180000)
+- Second Samurai (!AGA!) (with RESLOAD_TOP=0x1FF000)
+- Brian The Lion (!AGA!) (with RESLOAD_TOP=0x151000)
+
+*** from CD32LOAD V0.16 *** (improved compatibility with Psygore CDIO)
+- Mortal Kombat (no more exotic options, runs with Psygore CDIO)
+- Mortal Kombat 2 (only on emulator)
+- Burning Rubber (!AGA!) (with CDBUFFER=0x120000 RESLOAD_TOP=0x1ff000) - only on emulator
+- Prince Of Persia (not with RNCD)
+- Sensible World Of Soccer (with RESLOAD_TOP=0x180000) - only on emulator
+- Putty Squad (!AGA!) (with RESLOAD_TOP=0x90000 CDBUFFER=0x1E0000) - only on emulator
+
+*** from CD32LOAD V0.17 *** (major update with Kickstart 1.x emulation support)
+- Another World (JOYPAD=0 since no kb remapping is needed)
+- Logical (JOY1BLUE=0x01)
+- Lettrix
+- Archon (newest 2016 slave) (JOY1PLAY=0x40)
+- Archon 2 (newest 2016 slave) (JOY1PLAY=0x40)
+- Citadel
+- Apano Sin (NOCDFREEZE or gfx will be trashed) - only on emulator
+- Apydia (JOY0BLUE=0x40)
+- Ruff'n'Tumble (newest 2016 slave)
+- Silkworm
+- Moktar/Titus The Fox (remap for digits)
+- Power Pinball CDTV
+- Marble Madness
+- Lost Vikings (remap)
+- Blasteroids
+- Gobliiins
+- Micromachines
+- Bombuzal
+- Rick Dangerous
+- Test Drive II (new slave)
+- Venus The Flytrap
+
+*** from CD32LOAD V0.18 ***
+- Dynablaster (new slave)
+- Desert Strike (new slave)
+- Double Dragon 2
+- Awesome (NOCACHE or it crashes after intro)
+
+*** from CD32LOAD V0.21 ***
+- Another World (on real HW!!)
+- The Blues Brothers
+
+*** from CD32LOAD V0.23 ***
+- Logical is broken, use v0.20 for now
+
+*** from CD32LOAD V0.26 ***
+- Shaq Fu (CDBUFFER=0xE0000 RESLOAD_TOP=0xFFFBC CPUCACHE)
+- Burning Rubber AGA (CDBUFFER=0x120000 RESLOAD_TOP=0x1ff000 CPUCACHE)
+- Overdrive (Team 17) (crashes winuae but ok on real hardware!!!)
+- Switchblade II
+- Super Off Road Racer (NOVBRMOVE FILECACHE)
+- Escape From The Planet of the Robot Monsters (FILECACHE)
+
+*** from CD32LOAD V0.28 ***
+- Project-X Special Edition
+- Shadow Fighter AGA
+- Street Racer (special unreleased slave needed)
+- Jurassic Park: with RESLOAD_TOP=0x1DF000
+
+*** from CD32LOAD V0.31 ***
+- Moonstone
+- Xenon (no more trashed gfx)
+
+*** from CD32LOAD V0.32 ***
+- Flashback
+- Odyssey (new slave)
+
+*** from CD32LOAD V0.33 ***
+- Push Over
+- No Second Prize (probably worked for a while)
+- Xenon 2 CDTV
+- Lionheart
+- Barbarian (Palace)
+- Slamtilt
+- Lemmings CDTV
+
+(probably a lot of kickstart emulation slaves will work, although they are often adventure games with need for saving,
+and most of them use small files, which makes loading very slow and sometimes never ends on real hardware)
+
+tested on WinUAE / 1MB A600 (must be 512k, no diskimages): (*)=tested on real HW by Cobe
+
+- BattleSquadron (*)
+- BeastBusters (*)
+- CJElephantAntics (*)
+- FinalFight (*)
+- MERCS (*)
+- Silkworm (*)
+- Turrican (*)
+- Turrican II
+- Leander
+- Arkanoid
+- Troddlers (*)
+- Twintris
+- Great Courts 2
+- 1000ccTurbo (*)
+- 3dGalax (*)
+- 9Lives (*)
+- Alianator (*)
+- AlienStorm (*)
+- AlienWorld (*)
+- Baal (*)
+- BatmanTheMovie (*)
+- BeachVolley (*)
+- BiplaneDuel (*)
+- Ghouls'n'Ghosts (*)
+- Micromachines (*)
+- Bombuzal
+- Midnight Resistance (*)
+- Magicboy (*)
+- Monster Business (*)
+- Mig29 (*)
+- Quik&Silva (*)
+
+working, but problems:
+
+- Puggsy (seems that sound is not working properly)
+- Epic works, but seems to have severe keyboard handling issues (I didn't test past the name-entry screen)
+- Alcatraz Works, sluggish during gameplay though (intro + menus are silky smooth). Keyboard issues. Maybe for the compatibility list?
+- Prime Mover: gfx trashed
+- Shadow Fighter (!AGA!) (with RESLOAD_TOP=0x80000) crashes after first round illegal????
+
+
+starting up but crash along the way:
+
+- Last Ninja 2: dots on screen, crashes after a while, probably bad patches/old slave
+- Mega Lo Mania: crashes after intro illegal instruction in the woods
+- Black Tiger: crash during game, retry nocache/nojoy
+- Lion King: free zone: start 0014c1ac, end 00164c0c, RESLOAD_TOP=0x150000 CDBUFFER=0x150000 MASKINT6 starts but locks up just before game
+
+non-working at all from the start:
+
+- Falcon: empty filename passed
+- F15 strike eagle: shows intro pic then TRAP xxx
+- Uridium 2: crashes free zone: start 00026296, end 0004b3ea, len $25154, Free zone: start 0013e35a, end 001fb8cb, len $bd571
+
+List of AGA / 2MB requests:
+
+- Final Odyssey: Theseus Verses The Minotaur
+- Kick Off 3 European Challenge AGA edition
+
+will not be possible using CD32load (not enough space to hold CD buffer):
+
+- Primal Rage: not possible since all memory seems to be taken up to $1FA49C!!
+- Fantasy Flyer AGA: needs kickemu: not possible not enough mem, a standard DOS patch would allow to run it
+- Fatman The Caped Consumer AGA: not possible all memory is taken
+- Mortal Kombat 2 (2MB slave): not possible all memory is taken (and 1MB slave works on emulation, not on real hardware) 
+- Alien Breed 2 AGA: memory all taken
+
+CDTV nonworking requests:
+
+Case of the Cautious Condor
+Chaos in Andromeda - Eyes of the Eagle
+Cubulus & Magic Serpent => Cubulus slave crashes
+Falcon
+Holiday Maker => working
+Indiana Jones and the Last Crusade => working, but slow on real hw
+Shiftrix
+Loom => working on emu
+Mind Run (no whdload slave yet)
+Murder Makes Strange Deadfellows
+Power Pinball => working but slooow
+Sim City
+Spirit of Excalibur (no whdload slave yet)
+Stadt der Loewen
+Strip Poker Live
+The Curse Of RA => working (needs keyboard for password entry)
+Winzer => working
+Wrath of the Demon => working

@@ -1,0 +1,8 @@
+*/datetime
+secret_and_unused_src/**
+work
+releases
+bin/cd32load
+**/*.info
+obj
+

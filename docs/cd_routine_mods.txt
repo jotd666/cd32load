@@ -1,0 +1,49 @@
+end of CD data loader:
+
+	; JFF: turn off DMA completely
+	; Notes:
+	; - setting to 0 locks up the loading next time
+	; - not doing anything about DMA triggers infinite level 2 interrupts:
+	;      * only if CD audio play routine was active before
+	;      * only on the real machine
+	and.l	#$11800000,AKIKO_DMA_OFFSET(a5)
+	; this is supposed to clear interrupts as Toni stated
+	; I think it would be good idea to check if there is any akiko interrupt active when switching to CD audio and clear all of them one by one. This should prevent all the interrupt related hangs.
+	; bit 28, 27, 26 and 25.
+	; 25 or 26: write zero to $b80020
+	; 27: $b8001f (see above)
+	; 28: $b8001d (same problem as above)
+
+	move.b	copy_of_writeonly_b8001f(A4),receive_DMA_circular_buffer_end_position(A3)
+	move.b	copy_of_writeonly_b8001d(A4),transmit_DMA_circular_buffer_end_position(A3)
+	move.b	#0,$b80020
+	
+end of audio:
+
+	; try to clear the remaining interrupts
+	clr.b	$1f(a5)
+	clr.b	$1d(a5)
+	clr.b	$20(a5)
+
+	
+delay (useful??)
+
+wait_a_while:
+	move.l  d5,-(a7)
+	move.l	#1000,d5
+.loop1
+	tst.l	d5
+	beq.b	.nodelay	; don't wait
+	move.l  d5,-(a7)
+    move.b	$dff006,d5
+.loop2
+	cmp.b	$dff006,d5
+	beq.s	.loop2
+	move.l	(a7)+,d5
+	subq.l	#1,d5
+	bne.b	.loop1
+.nodelay
+	move.l	(a7)+,d5
+	rts
+	
+	

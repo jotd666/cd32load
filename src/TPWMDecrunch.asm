@@ -1,0 +1,37 @@
+; IRA V2.00 (Nov  2 2010) (c)1993-95 Tim Ruehsen, (c)2009 Frank Wille
+	; ripped from Turrican 3, replaced A6,A5 by A0,A1
+	STORE_REGS	D0-D2/D7/A3-A5
+	MOVE.L	(A0)+,D0		;000: 201e  skip TPWM (already checked)
+	MOVE.L	(A0)+,D7		;002: 2e1e
+	MOVEA.L	A1,A4			;004: 284d
+	ADDA.L	D7,A4			;006: d9c7
+LAB_0000:
+	MOVE.B	(A0)+,D0		;008: 101e
+	MOVEQ	#7,D7			;00a: 7e07
+LAB_0001:
+	ADD.B	D0,D0			;00c: d000
+	BCS.S	LAB_0005		;00e: 650e
+	MOVE.B	(A0)+,(A1)+		;010: 1ade
+LAB_0002:
+	CMPA.L	A1,A4			;012: b9cd
+	BLS.S	LAB_0004		;014: 6306
+LAB_0003:
+	DBF	D7,LAB_0001		;016: 51cffff4
+	BRA.S	LAB_0000		;01a: 60ec
+LAB_0004:
+	RESTORE_REGS	D0-D2/D7/A3-A5
+	RTS				;01c: 4e75
+LAB_0005:
+	MOVE.B	(A0)+,D1		;01e: 121e
+	MOVEQ	#0,D2			;020: 7400
+	MOVE.B	D1,D2			;022: 1401
+	ASL.W	#4,D2			;024: e942
+	MOVE.B	(A0)+,D2		;026: 141e
+	ANDI.W	#$000f,D1		;028: 0241000f
+	ADDQ.W	#2,D1			;02c: 5441
+	MOVEA.L	A1,A3			;02e: 264d
+	SUBA.W	D2,A3			;030: 96c2
+LAB_0006:
+	MOVE.B	(A3)+,(A1)+		;032: 1adb
+	DBF	D1,LAB_0006		;034: 51c9fffc
+	BRA.S	LAB_0002		;038: 60d8
