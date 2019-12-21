@@ -1,6 +1,7 @@
-v0.47:
+v0.47 (21-12-2019):
 
-- ??
+- fixed access mode on a file (worked, but you never know)
+- reworked to be able to manage project with git
 
 v0.46 (28-10-2019):
 
