@@ -55,7 +55,7 @@ _LVOMapANSI            equ     -48
 
 MAJOR_VERSION = 0
 MINOR_VERSION = 4
-SUBMINOR_VERSION = 7
+SUBMINOR_VERSION = 8
 
 SET_VAR_CONTEXT:MACRO
 	lea	reloc_start,A4
@@ -215,6 +215,7 @@ LoadSlave:
 	JSRLIB	Close
 	
 	; now same thing for CD slave if exists
+    ; (and hasn't been disabled)
 	tst.b	cd_slave_name
 	beq	.out
 	move.l	#cd_slave_name,D1
@@ -267,7 +268,8 @@ VTRANS:MACRO
 	
 CheckJoypads:
 	SET_VAR_CONTEXT
-	
+    
+    
 	lea	lowname(pc),a1
 	moveq.l	#0,d0
 	move.l	$4.W,A6
@@ -275,12 +277,30 @@ CheckJoypads:
 	move.l	D0,_LowlevelBase
 	beq.b	.nolowl	; A1200/A600: maybe not present: who cares?
 	move.l	D0,A6
+    ; wait a while, first reads are unreliable (first detects a joystick even
+    ; if joypad is connected, then detects joypad but no buttons...)
+    ; I've seen a more delirious loop even in DeluxeGalaga code.
+    ; I suppose the author went crazy and read the joypad 500 times!!
+    ; better wait between the reads.
+    move.l  #3,d2
+.rloop
+    move.l  #100,d0
+    bsr BeamDelay
 	moveq	#1,D0
 	JSRLIB	ReadJoyPort
+    dbf d2,.rloop
 	move.l	d0,d1
+    
+
 	and.l	#JP_TYPE_MASK,D0
 	cmp.l	#JP_TYPE_JOYSTK,D0
-	bne.b	.exit		; no joystick in port 1: forget it
+	bne.b	.exit		; no joystick in port 1: direct jump to button test
+    
+    ; now port 1 has a joystick. transfer control buttons to joypad 0 if
+    ; joypad is connected in port 0
+	moveq	#0,D0
+	JSRLIB	ReadJoyPort
+ 
 	moveq	#0,D0
 	JSRLIB	ReadJoyPort
 	move.l	d0,d1
@@ -310,7 +330,7 @@ CheckJoypads:
 	VTRANS	yellow
 
 .exit
-	; D1 has joypad state
+ 	; D1 has joypad state
 	; if some button is pressed, enable CUSTOMx
 	; don't consider RED button since it could be used to run the game on startup menus
 ;	btst	#JPB_BUTTON_RED,D1
@@ -318,29 +338,69 @@ CheckJoypads:
 ;.nored
 	btst	#JPB_BUTTON_BLUE,D1
 	beq.b	.noblue
-	SETVAR_L	#1,custom1_flag
+	SETVAR_L	#-1,custom1_flag
+	move.w	#$00F,d0
+	bsr	colordelay_button
 .noblue
 	btst	#JPB_BUTTON_YELLOW,D1
 	beq.b	.noyellow
-	SETVAR_L	#1,custom2_flag
+	SETVAR_L	#-1,custom2_flag
+	move.w	#$FF0,d0
+	bsr	colordelay_button
 .noyellow
 	btst	#JPB_BUTTON_FORWARD,D1
 	beq.b	.noforward
-	SETVAR_L	#1,custom5_flag
-	
+	SETVAR_L	#-1,custom5_flag
+	move.w	#$494,d0
+	bsr	colordelay_button	
 .noforward
 	btst	#JPB_BUTTON_REVERSE,D1
 	beq.b	.noreverse
-	SETVAR_L	#1,custom4_flag
+	SETVAR_L	#-1,custom4_flag
+	move.w	#$949,d0
+	bsr	colordelay_button	
 	
 .noreverse
 	btst	#JPB_BUTTON_GREEN,D1
 	beq.b	.nogreen
-	SETVAR_L	#1,custom3_flag
-
+	SETVAR_L	#-1,custom3_flag
+	move.w	#$0F0,d0
+	bsr	colordelay_button	
 .nogreen
+	btst	#JPB_BUTTON_PLAY,D1
+	beq.b	.noplay
+    ; as if cd slave hasn't been specified
+	clr.b   cd_slave_name
+    move.w  #$EEE,d0
+	bsr	colordelay_button	
+
+.noplay
 .nolowl
 	rts
+
+; < D0: rgb
+colordelay_button:
+	movem.l	d1,-(a7)
+	move.l	d0,d1
+	move.l	#$1000,d0
+	bsr	colordelay
+	movem.l	(a7)+,d1
+	rts
+	
+colordelay:
+; < D0: numbers of vertical positions to wait
+; < D1: color $0rgb
+.bd_loop1
+	move.w  d0,-(a7)
+    move.b	$dff006,d0	; VPOS
+.bd_loop2
+	move.w	d1,$dff180
+	cmp.b	$dff006,d0
+	beq.s	.bd_loop2
+	move.w	(a7)+,d0
+	dbf	d0,.bd_loop1
+	rts
+	
 LoadKick:
 	STORE_REGS
 	add.l	A1,D0
@@ -1001,6 +1061,12 @@ start:
 .nofailsafe
 	
 	; end of arguments
+    
+	; swap joypad 1=>0 if joypad in port 0
+	; also check if buttons pressed to enable CUSTOMx tooltypes
+    ; and disable CD play
+	bsr	CheckJoypads
+
 	
 	lea	cdx_name(pc),A0
 	move.b	2(A0),D0
@@ -1221,9 +1287,6 @@ start:
 	moveq.l	#0,d2
 .skipchk
 
-	; swap joypad 1=>0 if joypad in port 0
-	; also check if buttons pressed to enable CUSTOMx tooltypes
-	bsr	CheckJoypads
 	
 	; load slave from disk
 	bsr	LoadSlave

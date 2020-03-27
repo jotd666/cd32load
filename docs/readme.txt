@@ -145,15 +145,17 @@ Note that you can reset the console by pressing all color buttons + play button 
 
 CUSTOMx options:
 
-Hold buttons at CD32Load startup to set CUSTOMx=1 even if not set by command line. Useful on read-only media!!
-ATM only value 1 can be set (it is the most useful). Of course, multiple presses enable several CUSTOMx flags
+Hold buttons at CD32Load startup to set CUSTOMx=all ones even if not set
+by command line. Useful on read-only media!!
+ATM only value 1 can be set (it is the most useful). Of course, multiple
+presses enable several CUSTOMx flags
 
-- Blue:    CUSTOM1=1
-- Yellow:  CUSTOM2=1
-- Green:   CUSTOM3=1
-- Reverse: CUSTOM4=1
-- Forward: CUSTOM5=1
-
+- Blue:    CUSTOM1=all ones
+- Yellow:  CUSTOM2=all ones
+- Green:   CUSTOM3=all ones
+- Reverse: CUSTOM4=all ones
+- Forward: CUSTOM5=all ones
+- Play: turn off cd slave if any => reverts to chip music
 
 About data loading:
 

@@ -1,6 +1,12 @@
 @echo off
 cd /D %~PD0
-set CMDLINE=C:\SysGCC\arm-eabi\bin\make -f makefile_cdslave.mak
+set CMDLINE=make -f makefile_cdslave.mak
+set PROGNAME=JimPower
+%CMDLINE%
+goto end
+set PROGNAME=Z-Out
+%CMDLINE%
+goto end
 set PROGNAME=MarbleMadness
 %CMDLINE%
 set PROGNAME=Gods
@@ -18,5 +24,6 @@ set X=%ERRORLEVEL%
 set PROGNAME=Premiere
 %CMDLINE%
 set X=%ERRORLEVEL%
+:end
 pause
 exit %X%

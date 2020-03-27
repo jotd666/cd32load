@@ -1,7 +1,15 @@
+v0.48 (27.03.2020):
+
+- fixed customx set detection on startup (button readings could fail)
+- hold "play" during startup to disable CD music if a cdslave is set
+- added colored screen when button is detected on startup to enable customx
+- when a button is pressed, customx is set to all 1s ($FFFFFFFF) instead of 1
+
 v0.47 (21-12-2019):
 
 - fixed access mode on a file (worked, but you never know)
 - reworked to be able to manage project with git
+- source code now available on github
 
 v0.46 (28-10-2019):
 
