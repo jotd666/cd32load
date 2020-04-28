@@ -5,6 +5,9 @@ Some extra plugins (game specific) allow to play CD music on games originally wi
 
 There are a lot of bugs & limitations but worth a shot for the ones which work (tested on winuae and on real CD32 & A1200 hardware)
 
+Note that it requires some expertise to configure your own CD compilation for CD32load, specially for AGA games.
+It doesn't require any if the CD is already configured by someone else, and you're just using CD32load without even knowing it.
+
 Howto:
 
 - install "cd32load" in C subdir of the CD/HD
@@ -183,8 +186,9 @@ Bugs/todo (high priority):
 
 - added more info in "red screen of death" about last attempted CD command
 - manage to avoid NOVBRMOVE/JOYPAD0 in some games (Rainbow Islands) or add explicit joypad support
-  (well, adding joypad support is modifying game slaves directly, not CD32load)
-- add option to force joystick type / test fire pressed at game start => forces 2-button joy
+  (well, adding joypad support is modifying game slaves directly, not CD32load): explicit joypad support
+  is done regularly on games that deserve it now as whdload users can benefit of it. Besides, the way the
+  keyboard emulation system is made can conflict with the game if the game uses CIA-B timer for music (ex: Fire & Ice)
 - Kickemu does not seem to like IDEHD mode: freezes
 - replace IDE/HD code by some other IDE code which is able to read file parts
   (current code only reads whole files, so diskfiles + low memory => you're toast)
@@ -192,7 +196,7 @@ Bugs/todo (high priority):
 
 Bugs/todo (low priority):
 
-- add support for CD play in more slaves :)
+- add support for CD play in more slaves :) This is ongoing and unrelated to CD32load development
 - Zeewolf seems to crash if the virtual keyboard is used during the game (the password screen is fine). I don't know why
 - Some games won't work, either because of the memory layout, or imperfect whdload emulation
 - use FastMem when available (would allow to run some memory-needy AGA games from CD, but is that worth now that whdload is free?)

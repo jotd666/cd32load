@@ -354,12 +354,22 @@ FRAMES_TO_SUB = 14
 .nevermind
 	ENDC
 	
+    ; save dma control register
+    move.w  dmaconr(a6),d4
+    ; stop audio DMA so no more spurious/repeating sample playback
+    ; while CD is seeking/starting
+    move.w  #$F,dmacon(a6)
 	lea cmd_play(pc),a0
 	bsr.w sendcmd
 
 	lea cmd_unpause(pc),a0
 	bsr.w sendcmd
-	
+    
+    ; restore audio dma as it was before
+    ; (using d4 which isn't used here)
+    or.w    #$8000,d4
+    move.w  d4,dmacon(a6)
+    
 	SETVAR_W	d6,cd_track_playing
 	
 play_error:

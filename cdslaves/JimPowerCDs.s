@@ -99,9 +99,17 @@ game_loop
 	move.w	#$F8,d0
 	jsr	$46DE.W		; beam sync
 	rts
+
+    ; we could have disabled the spurious music stop when the end of level
+    ; is reached, because the system detects that the music has stopped and it restarts
+    ; but that means patching each game loop for that. We can also store the current track
+    ; last time cd_stop was called. And in that case, the play loop does nothing until the
+    ; current track changes (except this is the title screen)
 	
 cd_stop
 	movem.l	a0,-(a7)
+    lea current_track_stopped(pc),a0
+    move.l  current_track(pc),(a0)
 	move.l	_cdstop(pc),a0
 	jsr	(a0)
 	movem.l	(a7)+,a0
@@ -116,7 +124,8 @@ play_sound:
 	lea	loop_counter(pc),a0
 	subq.w	#1,(a0)
 	bne.b	.out
-	; reload
+	; reload not each time, would cost too much cpu
+    ; to interrogate the CD device all the time
 	move.w	#NB_PLAY_TICKS,(a0)
 	
 	move.l	_cdstatus(pc),a0
@@ -126,14 +135,19 @@ play_sound:
 	cmp.l	#3,d0
 	beq.b	.out	; error: well, skip that
 
+    ; play only if title or different track than before
 	move.l	current_track(pc),d0
+    beq.b   .play
+.play    
+    cmp.l  current_track_stopped(pc),d0
+    beq.b  .out     ; don't replay the same level track
 	moveq.l	#0,d1
 	move.l	_cdplay(pc),a0
 	jsr	(a0)
 	
 .out
 	movem.l	(a7)+,d0-d1/a0
-	; call original, so sound fx work ???
+	; call original, so sound fx work
 	jmp			$6CE88+36
 
 
@@ -203,7 +217,10 @@ set_subsong
 	
 	
 current_track
-	dc.l	0	
+	dc.l	0
+current_track_stopped
+    dc.l    0
+    
 module_data:
 	dc.l	0
 	; looks like load locations are always different, allowing to identify

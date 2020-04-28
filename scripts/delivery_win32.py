@@ -8,9 +8,9 @@ ROOTDIR=os.path.join(PROGRAM_DIR,os.pardir)
 
 PRODUCT_NAME="cd32load"
 
-f = open("bin/cd32load","rb")
-contents = f.read()
-f.close()
+with open(os.path.join(ROOTDIR,"bin","cd32load"),"rb") as f:
+    contents = f.read()
+
 vs=b"CD32LOAD version "
 offset = contents.find(vs)+len(vs)
 version = "v"+contents[offset:offset+4].decode()

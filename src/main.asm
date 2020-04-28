@@ -55,7 +55,7 @@ _LVOMapANSI            equ     -48
 
 MAJOR_VERSION = 0
 MINOR_VERSION = 4
-SUBMINOR_VERSION = 8
+SUBMINOR_VERSION = 9
 
 SET_VAR_CONTEXT:MACRO
 	lea	reloc_start,A4
@@ -1820,6 +1820,7 @@ start:
 
 	move.w	#$0024,(bplcon2,A5)	; sprite priority (Battle Squadron)
 	move.w	#$0C40,(bplcon3,A5)
+	move.w	#$0011,(bplcon4,A5)	; sprite color table order (Jim Power)
 	move.w	#$0,(bpl1mod,A5)
 	move.w	#$0,(bpl2mod,A5)
 
