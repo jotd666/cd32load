@@ -3,7 +3,7 @@
 ;
 ; JOTD: resourced for CD32Load
 ; JOTD: removed CD, floppy & NVM parts which aren't useful for CD32Load
-; JOTD: added read part of file capability
+; JOTD: added read part of file capability (not done yet!!)
 
 	include	whdmacros.i
 

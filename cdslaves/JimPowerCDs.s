@@ -137,10 +137,12 @@ play_sound:
 
     ; play only if title or different track than before
 	move.l	current_track(pc),d0
+    beq.b   .out    ; no current track
+	cmp.l   #2,d0   ; title track; always play (end sequence => intro)
     beq.b   .play
-.play    
     cmp.l  current_track_stopped(pc),d0
     beq.b  .out     ; don't replay the same level track
+.play    
 	moveq.l	#0,d1
 	move.l	_cdplay(pc),a0
 	jsr	(a0)

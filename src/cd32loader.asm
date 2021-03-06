@@ -39,7 +39,9 @@ NB_IRQ_RETRIES = 4
 
 CDL_0000:
 	bra	.go
-	dc.b	"THANK YOU PSYGORE FOR THE SOURCE CODE"
+    ; small message of appreciation
+	dc.b	"THANK YOU PSYGORE FOR NOT PROVIDING THE SOURCE CODE "
+	dc.b	"BECAUSE YOU PROBABLY RIPPED THAT FROM ROB NORTHEN CODE",0
 	even
 .go
 	MOVEM.L	D3/A2-A4,-(A7)		;032: 48e71038
@@ -181,7 +183,7 @@ CDL_0008:
 	MOVE.B	#$07,316(A4)		;11e: 197c0007013c
 	BSR.W	CDL_0083		;124: 61000938
 	BPL.S	CDL_000A		;128: 6a0e
-	BSR.W	CDL_0084		;12a: 61000936
+	BSR.W	wait_for_something		;12a: 61000936
 	BPL.S	CDL_000A		;12e: 6a08
 	DBF	D1,CDL_0008		;130: 51c9ffe4
 CDL_0009:
@@ -687,16 +689,30 @@ CDL_0048:
 	TST.L	D0			;60c: 4a80
 	MOVEM.L	(A7)+,D2-D3/A0-A2	;60e: 4cdf070c
 	RTS				;612: 4e75
+    
+; Toni wrote (https://eab.abime.net/showpost.php?p=1267853&postcount=11):
+; Writing loader isn't that difficult
+; (CDTV CD controller is much more intelligent than CD32,
+; CDTV can return 2048 byte "cooked" sectors. CD32 only returns
+; raw 2352 sectors)
+; below is the read sector routine (cooked) for CD32
+
+; < D1: track number ($800*track number = offset in ISO)
+; < D2: number of tracks to read (one track = $800 bytes)
+; < A1: destination buffer
 lab_CD_READSECTOR:
 	MOVEQ	#CDLERR_NODATA,D0			;614: 70f8
 	BTST	#4,335(A4)		;616: 082c0004014f
 	BNE.S	CDL_004A		;61c: 6602
 	RTS				;61e: 4e75
 CDL_004A:
+    ; multiply D1 and D2 by $800 
+    ; to get real iso offset & size
 	LSL.L	#8,D1			;620: e189
 	LSL.L	#3,D1			;622: e789
 	LSL.L	#8,D2			;624: e18a
 	LSL.L	#3,D2			;626: e78a
+    ; can be directly called there too from other sub-routines
 do_the_read_sector_job:
 	MOVEM.L	D2-D5/A0-A1,-(A7)	;628: 48e73cc0
 	MOVE.L	D1,D4			;62c: 2801
@@ -790,7 +806,7 @@ CDL_0057:
 	MOVEQ	#0,D0			;6ea: 7000
 	BSR.W	CDL_0070		;6ec: 610001f4
 	BSR.S	CDL_005A		;6f0: 611e
-	BSR.W	CDL_0084		;6f2: 6100036e
+	BSR.W	wait_for_something		;6f2: 6100036e
 	MOVE.L	(A7)+,D0		;6f6: 201f
 	BRA.S	CDL_0059		;6f8: 600a
 CDL_0058:
@@ -1110,7 +1126,7 @@ CDL_0082:
 	
 CDL_0083:
 	BSR.W	CDL_007C		;a5e: 6100ff7a
-CDL_0084:
+wait_for_something:
 	MOVE.L	A0,-(A7)		;a62: 2f08
 	MOVEQ	#16,D0			;a64: 7010
 	SWAP	D0			;a66: 4840
@@ -1324,7 +1340,7 @@ CDL_00A1:
 	BSR.W	CDL_007D		;c84: 6100fd56
 	TST.L	(A7)			;c88: 4a97
 	BNE.S	CDL_00A2		;c8a: 6604
-	BSR.W	CDL_0084		;c8c: 6100fdd4
+	BSR.W	wait_for_something		;c8c: 6100fdd4
 CDL_00A2:
 	MOVE.L	(A7)+,D0		;c90: 201f
 	RTS				;c92: 4e75
