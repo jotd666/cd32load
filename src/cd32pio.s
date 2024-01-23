@@ -291,6 +291,9 @@ cdaudio_play_track:
 	; CD command index counter
 	moveq #0,d7
 
+	tst.w       toc_done
+	bne         skiptoc
+
 	; flush possible half-transmitted
 	; command, 12 bytes is max command length
 	moveq #12/2+1-1,d4
@@ -315,7 +318,8 @@ waittoc
 	beq.s waittoc
 	cmp.b toc_found(pc),d0
 	bne.s waittoc
-skiptoc
+    st          toc_done   
+skiptoc:
 	; JOTD that doesn't seem needed
 	;lea cmd_unpause(pc),a0
 	;bsr.w sendcmd
@@ -688,6 +692,10 @@ play_status
 	dc.w -1
 playing_status
 	dc.b 0
+	; flag to avoid rescanning toc each time a track is played
+	; thanks John Girvin for the change!
+toc_done:
+	dc.b	0
 	even
 
 TOC_SIZE = 4

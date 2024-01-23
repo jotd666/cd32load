@@ -1,3 +1,10 @@
+v0.50 (23.01.2024):
+
+- fixed small typo in args parsing on CDXL option
+- ATN decruncher fixed to work out of place
+- CD32 music play: removed useless TOC read which freezes
+  the machine each time a track is read (thanks to John Girvin!)
+  
 v0.49 (28.04.2020):
 
 - audio dma is turned off when cd starts playing. This avoid ugly sample repeat effects
