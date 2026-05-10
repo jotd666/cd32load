@@ -39,7 +39,8 @@ NB_IRQ_RETRIES = 4
 
 CDL_0000:
 	bra	.go
-    ; small message of appreciation
+    ; small message of "appreciation". Philippe a nice person though, met him in 2025
+	; but I didn't tackle this sensitive source subject :)
 	dc.b	"THANK YOU PSYGORE FOR NOT PROVIDING THE SOURCE CODE "
 	dc.b	"BECAUSE YOU PROBABLY RIPPED THAT FROM ROB NORTHEN CODE",0
 	even

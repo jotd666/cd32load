@@ -54,7 +54,7 @@ _LVOMapANSI            equ     -48
 
 
 MAJOR_VERSION = 0
-MINOR_VERSION = 5
+MINOR_VERSION = 6
 SUBMINOR_VERSION = 0
 
 SET_VAR_CONTEXT:MACRO
@@ -1452,6 +1452,9 @@ start:
 	tst.l	idehd_flag
 	bne.b	.rnl
 	; Psygore CD loader, only CD, smaller
+	; the awesome change Psygore made was to be able to load
+	; a file partially, which allows to run more games. Big kudos
+	; for that!
 	move.l	#pgloader_end,loader_len
 	sub.l	#pgloader,loader_len
 	move.l	#pgloader,loader_start

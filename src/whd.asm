@@ -3,6 +3,10 @@
 ; relocatable routines
 ALL_FRONT_BUTTONS_MASK = JPF_BTN_RED|JPF_BTN_BLU|JPF_BTN_PLAY|JPF_BTN_GRN|JPF_BTN_YEL
 
+; should be enough for whdload emulation operation
+RESLOAD_STACK_SIZE = $200
+STACK_BOTTOM_ID = $DEADC0DE
+
 DEF_WHDOFFSET:MACRO
 	bra.w	jst_\1
 	CNOP	0,4
@@ -2712,12 +2716,25 @@ LOG_WHD_CALL:MACRO
 jst_resload_LoadFile:
 	;LOG_WHD_CALL	"LoadFile"
 	STORE_REGS	A3/A4
+	; limit stack usage, which may lead to issues in game code
+	; as the game often doesn't expect that much stack specially because of CD routines
+	lea		saved_stack(pc),a3
+	move.l	a7,(a3)
+	lea		resload_stack(pc),a7
+	
 	moveq.l	#-1,D1
 	moveq.l	#0,D0
 	SET_VAR_CONTEXT_2
 	GETVAR_L	read_file,A3
 	jsr	(A3)
 	exg	D0,D1	; swap D0 and D1 registers
+	
+	; check if stack was big enough
+	move.l	stack_bottom_check(pc),a3
+	cmp.l	#STACK_BOTTOM_ID,a3
+	bne		RunTime_CorruptStack
+	move.l	saved_stack(pc),a7	; restore stack
+	
 	tst.l	D1	; D1=0: okay
 	bne.b	.error
 
@@ -3788,10 +3805,18 @@ patch_jumptable:
 
 	RUNTIME_ERROR_ROUTINE	PalRequired,"Needs PAL video mode"
 	
+	RUNTIME_ERROR_ROUTINE	CorruptStack,"resload stack corruption"
 
 WHDMessUnsupported:
 	dc.b	10,"Run-Time Error: Unsupported WHDLoad call: "
 WHDMessUnsupported_Arg:
-	blk.b	30,0
+	ds.b	30,0
+
+saved_stack:
+	dc.l	0
+stack_bottom_check:
+	dc.l	STACK_BOTTOM_ID
+	ds.b	RESLOAD_STACK_SIZE
+resload_stack:
 	even
 	
