@@ -246,9 +246,6 @@ cdio_error_message:
 before_cdio:
 	movem.l	d5/A3,-(a7)
 	lea	$dff000,a3
-	; Mark CDIO first so the vertical blank replay helper cannot restart a
-	; looped CDDA track while we are trying to switch back to data reads.
-	SETVAR_B	#1,cdio_in_progress
 	; this routine (I don't know exactly why) stops the audio CD
 	; so better clear the playing flag, else the next cd audio stop locks up (because of looping test)
 	bsr	cdaudio_stop
@@ -270,6 +267,7 @@ before_cdio:
 	move.w	#$0008,(intena,a3)	; disable level 2 interrupts first
 	move.w	#$0008,(intreq,a3)	; clear level 2 interrupt request	
 	
+	SETVAR_B	#1,cdio_in_progress
 	TSTVAR_L	cdfreeze_flag
 	beq.b	.nofreeze		; if flag is set, then don't freeze interrupts when loading
 	move.w	#$7FFF,(intena,a3)	; disable interrupts

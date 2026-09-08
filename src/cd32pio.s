@@ -20,6 +20,10 @@ CDAUDIO_ASYNC_BYTES_PER_TICK = 4
 CDAUDIO_ASYNC_NEXT_NONE = 0
 CDAUDIO_ASYNC_NEXT_UNPAUSE = 1
 
+CDAUDIO_ASYNC_BYTES_PER_TICK = 4
+CDAUDIO_ASYNC_NEXT_NONE = 0
+CDAUDIO_ASYNC_NEXT_UNPAUSE = 1
+
 cd_audio_test
 	movem.l	d0-A6,-(a7)
 	lea $dff000,a6
@@ -213,12 +217,6 @@ cdaudio_monitor_play_blocking:
 cdaudio_stop:
 	movem.l	d0-A6,-(a7)
 	SET_VAR_CONTEXT
-	; During data reads, mute before touching the async queue/Pause command.
-	; If a loop replay was just armed, this prevents a short audible CDDA leak.
-	TSTVAR_B	cdio_in_progress
-	beq.b	.no_data_mute
-	bclr #0,$bfe001
-.no_data_mute
 	bsr	cdaudio_async_reset
 	TSTVAR_W	cd_track_playing
 	beq.b	.out		; if track is not playing, stopping can block
